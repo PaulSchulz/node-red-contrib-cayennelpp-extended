@@ -20,6 +20,7 @@ const LPP_CURRENT = 117;
 const LPP_FREQUENCY = 118;
 const LPP_PERCENTAGE = 120;
 const LPP_ALTITUDE = 121;
+const LPP_CONCENTRATION = 125;
 const LPP_POWER = 128;
 const LPP_DISTANCE = 130;
 const LPP_ENERGY = 131;
@@ -44,6 +45,7 @@ const LPP_CURRENT_NAME = 'current';
 const LPP_FREQUENCY_NAME = 'frequency';
 const LPP_PERCENTAGE_NAME = 'percentage';
 const LPP_ALTITUDE_NAME = 'altitude';
+const LPP_CONCENTRATION_NAME = 'concentration';
 const LPP_POWER_NAME = 'power';
 const LPP_DISTANCE_NAME = 'distance';
 const LPP_ENERGY_NAME = 'energy';
@@ -68,6 +70,7 @@ const LPP_CURRENT_SIZE = 2; // 2 bytes 0.001A unsigned
 const LPP_FREQUENCY_SIZE = 4; // 4 bytes 1Hz unsigned
 const LPP_PERCENTAGE_SIZE = 1; // 1 byte 1-100% unsigned
 const LPP_ALTITUDE_SIZE = 2; // 2 byte 1m signed
+const LPP_CONCENTRATION_SIZE = 2; // 2 bytes 1 PPM unsigned
 const LPP_POWER_SIZE = 2; // 2 byte, 1W, unsigned
 const LPP_DISTANCE_SIZE = 4; // 4 byte, 0.001m, unsigned
 const LPP_ENERGY_SIZE = 4; // 4 byte, 0.001kWh, unsigned
@@ -262,7 +265,17 @@ function decodeCayenneLpp(payload) {
               result[propertyName] = value;
             }
             break;
-          case LPP_POWER:
+        case LPP_CONCENTRATION:
+            if (cursor + LPP_CONCENTRATION_SIZE > buffer.length) {
+                throw new Error('Invalid CayennLpp message');
+            } else {
+                value = buffer.readInt16BE(cursor);
+                cursor += 2;
+                propertyName = LPP_CONCENTRATION_NAME + '_' + channel.toString();
+                result[propertyName] = value;
+            }
+            break;
+        case LPP_POWER:
             if (cursor + LPP_POWER_SIZE > buffer.length) {
               throw new Error('Invalid CayennLpp message');
             } else {
